@@ -376,14 +376,14 @@ card_date = dbc.Card(
 # Database Functions
 def get_db():
   """ Function to conect to data base in postgres """
-  ## Parameters
+  # Parameters
   host = "team-cv.cfsx82z4jthl.us-east-2.rds.amazonaws.com"
   user = "ds4a_69"
   port = "5432"
   password = "DS4A!2020"
   database = "postgres"
 
-  ## Create the engine with the db credentials
+  # Create the engine with the db credentials
   engine = sqlalchemy.create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}', max_overflow = 20)
   return engine
 
@@ -439,7 +439,7 @@ def visual_count(tracker):
 def print_path(tracker, plane):
     """ Function to print path inside a plane """
     tracker = tracker[(tracker['X_center_perspective'] != 0) & (tracker['Y_center_perspective'] != 0)]
-    img = io.imread(plane)
+    img = plane
     fig = px.imshow(img)
     fig.update_traces(hoverinfo='skip')
     fig.add_trace(go.Scatter(x = tracker['X_center_perspective'],
@@ -467,6 +467,7 @@ from PIL import Image
 imgx = Image.open('Images/Planos_San_Diego_1.jpg')
 imgx=imgx.convert("RGBA")
 
+##
 base_image_path = 'data:image/jpg;base64,{}'.format(san_diego_blue)
 engine = get_db()
 df = filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam)
@@ -708,13 +709,11 @@ def number_render(dhour, dminute):
 )
 def number_render(dhour, dminute):
     return "End Hour: {}, End Minute: {}".format(dhour, dminute)
-
+print("voy acá")
 #Date Callback
 @app.callback(
     Output('output-container-date-picker-single', 'children'),
-    [Input('my-date-picker-single', 'date')]
-)
-
+    [Input('my-date-picker-single', 'date')])
 def update_output(date_value):
     string_prefix = 'You have selected: '
     if date_value is not None:
