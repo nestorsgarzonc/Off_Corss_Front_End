@@ -550,6 +550,7 @@ video_upload = html.Div([
 # Meta Tags
 # ------------------------------------------
 app = dash.Dash(
+    __name__,
     external_stylesheets=[dbc.themes.CYBORG],
     # These meta_tags ensure content is scaled correctly on different devices. Don't Delete!!
     meta_tags=[
@@ -559,6 +560,8 @@ app = dash.Dash(
 )
 
 app.title = 'CV Team-69 DS4A!'
+
+server = app.server
 
 # ------------------------------------------
 # Sidebar Component
@@ -822,4 +825,4 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 
 
 if __name__ == "__main__":
-    app.run_server(host='0.0.0.0', port='80', debug=False)
+    app.run_server(host='0.0.0.0', port='8050', debug=False)
