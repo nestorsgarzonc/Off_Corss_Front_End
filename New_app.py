@@ -467,16 +467,17 @@ from PIL import Image
 imgx = Image.open('Images/Planos_San_Diego_1.jpg')
 imgx=imgx.convert("RGBA")
 
-##
+
 base_image_path = 'data:image/jpg;base64,{}'.format(san_diego_blue)
 engine = get_db()
 df = filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam)
-lineplot=visual_count(df).show()
-pathx=print_path(df, imgx).show()
+lineplot=visual_count(df)
+pathx=print_path(df, imgx)
 #---------------------------------------
+##
 Graphs_tracker = html.Div([dcc.Graph(figure=lineplot),
                            dcc.Graph(figure=pathx), ], id='graph_tracker')
-
+##
 #///////////////////////////////////////////////////////////////////////////////////////////////////
 video_upload= html.Div([
     dcc.Upload(
@@ -762,4 +763,4 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
         return children
 
 if __name__ == "__main__":
-     app.run_server(host='0.0.0.0',port='8050',debug=True)
+     app.run_server(host='localhost',port='8050',debug=True)
