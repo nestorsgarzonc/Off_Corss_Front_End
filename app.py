@@ -1,10 +1,6 @@
 """ First Front End Team 69 """
 
 # Dash Libraries
-from datetime import datetime
-from sqlalchemy import create_engine, text
-from PIL import Image
-import os
 import dash
 import dash_table
 import dash_bootstrap_components as dbc
@@ -16,16 +12,21 @@ from dash.dependencies import Input, Output, State
 from flask import Flask, send_from_directory
 
 # Python Libraries
-import plotly.express as px
-from skimage import io
-import pandas as pd
-import base64
 import io
-import plotly.graph_objects as go
-import numpy as np
-import json
 import re
+import cv2
+import json
+import base64
+import numpy as np
+import pandas as pd
+from PIL import Image
+from skimage import io
+import matplotlib.cm as cm
+import plotly.express as px
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 from datetime import date, datetime
+from scipy.ndimage.filters import gaussian_filter
 # SQL Alchemy
 import sqlalchemy
 from sqlalchemy import create_engine, text
@@ -66,8 +67,7 @@ UPLOAD_DIRECTORY = "Uploaded_Videos"
 button_groups = html.Div(
     [
         dbc.ButtonGroup(
-            [dbc.Button("Upload"), dbc.Button(
-                "Process"), dbc.Button("Cancel")],
+            [dbc.Button("Upload"), dbc.Button("Process"), dbc.Button("Cancel")],
             size="lg",
             className="mr-1")
     ]
@@ -77,8 +77,7 @@ button = dbc.Button("Upload", color="primary", block=True)
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
 # JumboTron for the Home Page
 card_content_cover = [
-    dbc.CardImg(
-        src='data:image/jpg;base64,{}'.format(cover_img.decode()), top=True),
+    dbc.CardImg(src='data:image/jpg;base64,{}'.format(cover_img.decode()), top=True),
 ]
 
 card_cover = dbc.Jumbotron(
@@ -89,11 +88,10 @@ card_int_1 = [
     dbc.CardHeader("Explore the traffic metrics in the Stores"),
     dbc.CardBody(
         [
-            dbc.CardImg(src='data:image/png;base64,{}'.format(metrics_img.decode()),
-                        top=True, className="card-img-top"),
+            dbc.CardImg(src='data:image/png;base64,{}'.format(metrics_img.decode()), top=True,
+                        className="card-img-top"),
             html.Hr(className="my-2"),
-            dbc.Button("Take me there!", href="/page-3",
-                       color="primary", className="metrics_button"),
+            dbc.Button("Take me there!", href="/page-3", color="primary", className="metrics_button"),
         ]
     ),
 ]
@@ -102,11 +100,9 @@ card_int_2 = [
     dbc.CardHeader("Upload and process your own videos!"),
     dbc.CardBody(
         [
-            dbc.CardImg(
-                src='data:image/jpg;base64,{}'.format(cloud_img.decode()), top=True),
+            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()), top=True),
             html.Hr(className="my-2"),
-            dbc.Button("Take me there!", href="/page-2",
-                       color="primary", className="metrics_button"),
+            dbc.Button("Take me there!", href="/page-2", color="primary", className="metrics_button"),
         ]
     ),
 ]
@@ -116,11 +112,9 @@ card_int_3 = [
                    "Learn more about OffCorss"),
     dbc.CardBody(
         [
-            dbc.CardImg(
-                src='data:image/png;base64,{}'.format(encoded_image.decode()), top=True),
+            dbc.CardImg(src='data:image/png;base64,{}'.format(encoded_image.decode()), top=True),
             html.Hr(className="my-2"),
-            dbc.Button("Take me there!", href="https://www.offcorss.com/",
-                       color="primary", className="metrics_button"),
+            dbc.Button("Take me there!", href="https://www.offcorss.com/", color="primary", className="metrics_button"),
         ]
     ),
 ]
@@ -149,16 +143,12 @@ jumbotron_int = dbc.Jumbotron(
 
 jumbotron_links = html.Div(
     [
-        dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
-                   color="primary", className="mintic_button"),
-        dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
-                   color="primary", className="correl_button"),
-        dbc.Button("", href="https://dash.plotly.com/",
-                   color="primary", className="ploty_button"),
+        dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/", color="primary", className="mintic_button"),
+        dbc.Button("", href="https://www.correlation-one.com/ds4a-latam", color="primary", className="correl_button"),
+        dbc.Button("", href="https://dash.plotly.com/", color="primary", className="ploty_button"),
     ],
     className="pretty_container"
 )
-
 
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
 # About Us cards
@@ -166,15 +156,14 @@ card_content_1 = [
     dbc.CardHeader("Crew Mate 1", className="center-text"),
     dbc.CardBody(
         [
-            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()),
-                        top=True, className="radius_img"),
+            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()), top=True, className="radius_img"),
             html.H5("Alekcei Hernández", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
-                               color="primary", className="linked_button"),
-                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
-                               color="primary", className="email_button"),
+                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/", color="primary",
+                               className="linked_button"),
+                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam", color="primary",
+                               className="email_button"),
                 ],
             )
         ]
@@ -185,15 +174,14 @@ card_content_2 = [
     dbc.CardHeader("Crew Mate 2", className="center-text"),
     dbc.CardBody(
         [
-            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()),
-                        top=True, className="radius_img"),
+            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()), top=True, className="radius_img"),
             html.H5("Alexander Sandoval", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
-                               color="primary", className="linked_button"),
-                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
-                               color="primary", className="email_button"),
+                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/", color="primary",
+                               className="linked_button"),
+                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam", color="primary",
+                               className="email_button"),
                 ],
             )
         ]
@@ -204,15 +192,14 @@ card_content_3 = [
     dbc.CardHeader("Crew Mate 3", className="center-text"),
     dbc.CardBody(
         [
-            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()),
-                        top=True, className="radius_img"),
+            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()), top=True, className="radius_img"),
             html.H5("David Henriquez", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
-                               color="primary", className="linked_button"),
-                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
-                               color="primary", className="email_button"),
+                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/", color="primary",
+                               className="linked_button"),
+                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam", color="primary",
+                               className="email_button"),
                 ],
             )
         ]
@@ -223,15 +210,14 @@ card_content_4 = [
     dbc.CardHeader("Crew Mate 4", className="center-text"),
     dbc.CardBody(
         [
-            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()),
-                        top=True, className="radius_img"),
+            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()), top=True, className="radius_img"),
             html.H5("Guillermo Valencia", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
-                               color="primary", className="linked_button"),
-                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
-                               color="primary", className="email_button"),
+                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/", color="primary",
+                               className="linked_button"),
+                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam", color="primary",
+                               className="email_button"),
                 ],
             )
         ]
@@ -242,15 +228,14 @@ card_content_5 = [
     dbc.CardHeader("Crew Mate 5", className="center-text"),
     dbc.CardBody(
         [
-            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()),
-                        top=True, className="radius_img"),
+            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()), top=True, className="radius_img"),
             html.H5("Harold García", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
-                               color="primary", className="linked_button"),
-                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
-                               color="primary", className="email_button"),
+                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/", color="primary",
+                               className="linked_button"),
+                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam", color="primary",
+                               className="email_button"),
                 ],
             )
         ]
@@ -261,15 +246,14 @@ card_content_6 = [
     dbc.CardHeader("Crew Mate 6", className="center-text"),
     dbc.CardBody(
         [
-            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()),
-                        top=True, className="radius_img"),
+            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()), top=True, className="radius_img"),
             html.H5("Sebastian Garzón", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
-                               color="primary", className="linked_button"),
-                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
-                               color="primary", className="email_button"),
+                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/", color="primary",
+                               className="linked_button"),
+                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam", color="primary",
+                               className="email_button"),
                 ],
             )
         ]
@@ -280,15 +264,14 @@ card_content_7 = [
     dbc.CardHeader("Crew Mate 3", className="center-text"),
     dbc.CardBody(
         [
-            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()),
-                        top=True, className="radius_img"),
+            dbc.CardImg(src='data:image/jpg;base64,{}'.format(cloud_img.decode()), top=True, className="radius_img"),
             html.H5("David Henriquez", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
-                               color="primary", className="linked_button"),
-                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
-                               color="primary", className="email_button"),
+                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/", color="primary",
+                               className="linked_button"),
+                    dbc.Button("", href="https://www.correlation-one.com/ds4a-latam", color="primary",
+                               className="email_button"),
                 ],
             )
         ]
@@ -319,10 +302,8 @@ dropdown_stores = dbc.FormGroup(
         dcc.Dropdown(
             id="dropdown_store",
             options=[
-                {"label": "San Diego Store",
-                 "value": 'San Diego Store'},
-                {"label": "Santa Fe Store",
-                 "value": 'Santa Fe Store'},
+                {"label": "San Diego Store", "value": 'San Diego Store'},
+                {"label": "Santa Fe Store", "value": 'Santa Fe Store'},
             ],
             value='San Diego Store'
         ),
@@ -395,8 +376,8 @@ Cam_picker = dbc.FormGroup(
 xxx = dbc.Card([html.Div(id='output-dropdown-cameras')])
 
 # 5. Final form
-form_store_pick = dbc.Form([dropdown_stores, date_picker,
-                            hour_picker_start, hour_picker_end, Cam_picker], className="mr-3")
+form_store_pick = dbc.Form([dropdown_stores, date_picker, hour_picker_start, hour_picker_end, Cam_picker]
+                           , className="mr-3")
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
 card_date = dbc.Card(
     [
@@ -406,15 +387,14 @@ card_date = dbc.Card(
                 form_store_pick
             ]
         ),
-        dbc.CardFooter(
-            "Please select a Date, Start and End Hour and the Cam to start the video analysis"),
+        dbc.CardFooter("Please select a Date, Start and End Hour and the Cam to start the video analysis"),
     ],
     style={"width": "18rem"},
 )
+
+
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
 # Database Functions
-
-
 def get_db():
     """ Function to conect to data base in postgres """
     # Parameters
@@ -425,22 +405,16 @@ def get_db():
     database = "postgres"
 
     # Create the engine with the db credentials
-    engine = sqlalchemy.create_engine(
-        f'postgresql://{user}:{password}@{host}:{port}/{database}', max_overflow=20)
+    engine = sqlalchemy.create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}', max_overflow=20)
     return engine
-
-
-#import cv2
-#from utils import *
 
 
 def filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam):
     """ Function to generate fig, count people per second """
     # Filter dates
-    start_date = datetime.strptime(
-        date + ' ' + start_hour.zfill(2) + ':' + start_min.zfill(2) + ':00', '%d/%m/%Y %H:%M:%S')
-    end_date = datetime.strptime(
-        date + ' ' + end_hour.zfill(2) + ':' + end_min.zfill(2) + ':00', '%d/%m/%Y %H:%M:%S')
+    start_date = datetime.strptime(date + ' ' + start_hour.zfill(2) + ':' + start_min.zfill(2) + ':00',
+                                   '%d/%m/%Y %H:%M:%S')
+    end_date = datetime.strptime(date + ' ' + end_hour.zfill(2) + ':' + end_min.zfill(2) + ':00', '%d/%m/%Y %H:%M:%S')
 
     connection = engine.connect()
 
@@ -452,9 +426,10 @@ def filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam
             AND "Object"= :O
             '''
 
-    tracker_conn = connection.execute(text(
-        query), group='san diego', A=start_date, B=end_date, C=int(cam[-1]), O='person').fetchall()
-    columns = ['Store_name', 'Start_date', 'End_date', 'current_datetime', 'Camera', 'Object', 'Id', 'X_center_original', 'Y_center_original',
+    tracker_conn = connection.execute(text(query), group='san diego', A=start_date, B=end_date, C=int(cam[-1]),
+                                      O='person').fetchall()
+    columns = ['Store_name', 'Start_date', 'End_date', 'current_datetime', 'Camera', 'Object', 'Id',
+               'X_center_original', 'Y_center_original',
                'X_center_perspective', 'Y_center_perspective', 'X_min', 'Y_min', 'X_max', 'Y_max', 'Frame']
     tracker = pd.DataFrame(tracker_conn, columns=columns)
 
@@ -462,24 +437,27 @@ def filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam
 
 
 def visual_count(tracker):
-    """ Function to generate count of people per sec """
+    """ Function to generate count og people per sec """
     # df_plot = tracker.groupby(['Store_name','Current_date','Frame']).count()['Second'].reset_index()
-    df_plot = tracker.groupby(['current_datetime', 'Frame']).count()[
-        'Store_name'].reset_index()
+    df_plot = tracker.groupby(['current_datetime', 'Frame']).count()['Store_name'].reset_index()
     # df_plot = df_plot.groupby(['Store_name','Current_date']).mean().reset_index()
-    df_plot = df_plot.groupby(['current_datetime']).mean().reset_index()
+    df_plot['hour'] = df_plot['current_datetime'].dt.hour
+    df_plot['minute'] = df_plot['current_datetime'].dt.minute
+    df_plot['second'] = df_plot['current_datetime'].dt.second
+    df_plot = df_plot.groupby(['hour', 'minute']).mean().reset_index()
+    df_plot['hour_minute'] = df_plot['hour'].astype('str') + ':' + df_plot['minute'].astype('str')
+
     df_plot['People'] = np.round(df_plot['Store_name'])
     # fig = px.line(df_plot, x = "Current_date",  y = "People", color = 'Store_name', title = 'Number of persons per second of video')
-    fig = px.line(df_plot, x="current_datetime",  y="People",
-                  title='Number of persons per second of video')
+    fig = px.line(df_plot, x='hour_minute', y="People", title='Number of persons per minute of video')
     fig.update_layout(yaxis=dict(range=[0, max(df_plot['People']) + 1]))
+    fig.update_layout(width=900, height=600)
     return fig
 
 
 def print_path(tracker, plane):
     """ Function to print path inside a plane """
-    tracker = tracker[(tracker['X_center_perspective'] != 0)
-                      & (tracker['Y_center_perspective'] != 0)]
+    tracker = tracker[(tracker['X_center_perspective'] != 0) & (tracker['Y_center_perspective'] != 0)]
     img = plane
     fig = px.imshow(img)
     fig.update_traces(hoverinfo='skip')
@@ -487,10 +465,57 @@ def print_path(tracker, plane):
                              y=tracker['Y_center_perspective'],
                              marker_color=tracker['Id'],
                              name='Id',
-                             mode='lines+markers'))
+                             mode='markers'))
     fig.update_layout(coloraxis_showscale=False)
     fig.update_xaxes(showticklabels=False)
     fig.update_yaxes(showticklabels=False)
+    fig.update_layout(autosize=False, width=900, height=600, margin=go.layout.Margin(
+        l=0,  # left margin
+        r=0,  # right margin
+        b=0,  # bottom margin
+        t=0  # top margin
+    ))
+    fig.update_yaxes(automargin=True)
+    return fig
+
+
+def print_hot_spots(df, plane, name_temp, sigma=4):
+    # Get the data to plot
+    df = df[(df['X_center_perspective'] != 0) & (df['Y_center_perspective'] != 0)]
+    x = list(df['X_center_perspective'])
+    y = list(df['Y_center_perspective'])
+
+    # Create imagen and save temp
+    base_image = plane
+    fig, ax = plt.subplots(1, 1, figsize=(20, 16))
+    heatmap, xedges, yedges = np.histogram2d(x, y, bins=200, range=[[0, 1280], [0, 720]])
+    heatmap = gaussian_filter(heatmap, sigma=sigma)
+    extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+    img = heatmap.T
+    ax.imshow(img, extent=extent, cmap=cm.jet)
+    ax.imshow(base_image, alpha=0.3)
+    ax.set_xlim(0, 1280)
+    ax.set_ylim(0, 720)
+    ax.axes.get_yaxis().set_visible(False)
+    ax.axes.get_xaxis().set_visible(False)
+    plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
+    plt.savefig(name_temp, bbox_inches='tight')
+    plt.close(fig)
+
+    # Upload imagen in plotly
+    img = io.imread(name_temp)
+    fig = px.imshow(img)
+    fig.update_traces(hoverinfo='skip')
+    fig.update_layout(coloraxis_showscale=False)
+    fig.update_xaxes(showticklabels=False)
+    fig.update_yaxes(showticklabels=False)
+    fig.update_layout(autosize=False, width=900, height=600, margin=go.layout.Margin(
+        l=0,  # left margin
+        r=0,  # right margin
+        b=0,  # bottom margin
+        t=0  # top margin
+    ))
+    fig.update_yaxes(automargin=True)
     return fig
 
 
@@ -501,25 +526,21 @@ start_min = '57'
 end_hour = '23'
 end_min = '59'
 cam = 'Cam 1'
-
-
 # ...
-
 imgx = Image.open('Images/Planos_San_Diego_1.jpg')
 imgx = imgx.convert("RGBA")
-
-
-base_image_path = 'data:image/jpg;base64,{}'.format(san_diego_blue)
+# ----------------------------------------
 engine = get_db()
-df = filter_df(engine, store, date, start_hour,
-               start_min, end_hour, end_min, cam)
+df = filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam)
 lineplot = visual_count(df)
 pathx = print_path(df, imgx)
 # ---------------------------------------
-##
-Graphs_tracker = html.Div([dcc.Graph(figure=lineplot),
-                           dcc.Graph(figure=pathx), ], id='graph_tracker')
-##
+heat_map = print_hot_spots(df, imgx, 'temp_hot_spot.jpeg')
+# ---------------------------------------
+Graphs_tracker = html.Div([dcc.Graph(figure=lineplot, id="lin_traffic"),
+                           dcc.Graph(figure=pathx, id="map_traffic"),
+                           dcc.Graph(figure=heat_map, id="heat_traffic"), ], id='graph_tracker')
+
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
 video_upload = html.Div([
     dcc.Upload(
@@ -544,13 +565,11 @@ video_upload = html.Div([
     html.Div(id='output-video-upload'),
 ])
 
-
 # Building Blocks
 # ------------------------------------------
 # Meta Tags
 # ------------------------------------------
 app = dash.Dash(
-    __name__,
     external_stylesheets=[dbc.themes.CYBORG],
     # These meta_tags ensure content is scaled correctly on different devices. Don't Delete!!
     meta_tags=[
@@ -561,8 +580,6 @@ app = dash.Dash(
 
 app.title = 'CV Team-69 DS4A!'
 
-server = app.server
-
 # ------------------------------------------
 # Sidebar Component
 # ------------------------------------------
@@ -570,8 +587,7 @@ server = app.server
 # it consists of a title, and a toggle, the latter is hidden on large screens
 sidebar_header = dbc.Row(
     [
-        dbc.Col(dbc.CardImg(
-            src='data:image/png;base64,{}'.format(encoded_image.decode()), className="display-4")),
+        dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'.format(encoded_image.decode()), className="display-4")),
         dbc.Col(
             [
                 html.Button(
@@ -625,10 +641,8 @@ sidebar = html.Div(
         dbc.Collapse(
             dbc.Nav(
                 [
-                    dbc.NavLink("Home", href="/page-1",
-                                id="page-1-link", className="ico_home"),
-                    dbc.NavLink("Upload my Video", href="/page-2",
-                                id="page-2-link", className="ico_upload"),
+                    dbc.NavLink("Home", href="/page-1", id="page-1-link", className="ico_home"),
+                    dbc.NavLink("Upload my Video", href="/page-2", id="page-2-link", className="ico_upload"),
                     # ----------------------------------------------------------------------------------------
                     dbc.Button(
                         "Store's Metrics",
@@ -639,7 +653,8 @@ sidebar = html.Div(
                     ),
                     # -------------------------------------------
                     dbc.Collapse(dbc.Nav(
-                        [dbc.NavLink("Video Analysis results", href="/page-3", id="page-3-link", className="collap_menu"),
+                        [dbc.NavLink("Video Analysis results", href="/page-3", id="page-3-link",
+                                     className="collap_menu"),
                          dbc.NavLink("Trends Analysis", href="/page-4", id="page-4-link", className="collap_menu"), ],
                         vertical=True,
                         pills=True,
@@ -647,8 +662,7 @@ sidebar = html.Div(
                         id="collapse_2",
                     ),
                     # ---------------------------------------r-------------------------------------------------
-                    dbc.NavLink("About Us", href="/page-5",
-                                id="page-5-link", className="ico_about_"),
+                    dbc.NavLink("About Us", href="/page-5", id="page-5-link", className="ico_about_"),
                 ],
                 vertical=True,
                 pills=True,
@@ -662,10 +676,9 @@ sidebar = html.Div(
 content = html.Div(id="page-content")
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
+
 # this callback uses the current pathname to set the active state of the
 # corresponding nav link to true, allowing users to tell see page they are on
-
-
 @app.callback(
     [Output(f"page-{i}-link", "active") for i in range(1, 6)],
     [Input("url", "pathname")],
@@ -691,11 +704,10 @@ def render_page_content(pathname):
         ])
     elif pathname == "/page-3":
         return html.Div([html.P("Oh cool, this is page 3!"),
-                         Graphs_tracker
                          ])
     elif pathname == "/page-4":
-        return html.Div([html.P("Oh cool, this is page 4!"),
-                         card_date])
+        return html.Div([card_date,
+                         Graphs_tracker])
     elif pathname == "/page-5":
         return html.Div([cards,
                          cards_2])
@@ -751,9 +763,8 @@ def toggle_collapse(n, is_open):
 def number_render(dhour, dminute):
     return "Start Hour: {}, Start Minute: {}".format(dhour, dminute)
 
+
 # End
-
-
 @app.callback(
     Output("number-out-end", "children"),
     [Input("End Hour", "value"), Input("End Minute", "value")],
@@ -762,10 +773,7 @@ def number_render(dhour, dminute):
     return "End Hour: {}, End Minute: {}".format(dhour, dminute)
 
 
-print("voy acá")
 # Date Callback
-
-
 @app.callback(
     Output('output-container-date-picker-single', 'children'),
     [Input('my-date-picker-single', 'date')])
@@ -773,12 +781,11 @@ def update_output(date_value):
     string_prefix = 'You have selected: '
     if date_value is not None:
         date_object = datetime.strptime(date_value.split(' ')[0], '%Y-%m-%d')
-        date_string = date_object.strftime('%B %d, %Y')
+        date_string = date_object.strftime('%d, %B, %Y')
         return string_prefix + date_string
 
+
 # Store Callback
-
-
 @app.callback(
     Output('output-dropdown-stores', 'children'),
     [Input('dropdown_store', 'value')]
@@ -788,9 +795,8 @@ def update_output_store(value):
     if value is not None:
         return 'You have selected "{}"'.format(value)
 
+
 # Camera Callback
-
-
 @app.callback(
     Output('output-dropdown-cameras', 'children'),
     [Input('dropdown_cams', 'value')]
@@ -800,9 +806,8 @@ def update_output_camera(value):
     if value is not None:
         return 'You have selected "{}"'.format(value)
 
+
 # Video upload Callback
-
-
 def parse_contents(contents, filename, date):
     return html.Div([
         html.H5(filename),
@@ -824,5 +829,40 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
         return children
 
 
+#
+# Start
+@app.callback([Output('map_traffic', 'figure'),
+               Output('lin_traffic', 'figure'),
+               Output('heat_traffic', 'figure')],
+              [Input("Start Hour", "value"),
+               Input("Start Minute", "value"),
+               Input("End Hour", "value"),
+               Input("End Minute", "value"),
+               Input('dropdown_cams', 'value'),
+               Input('my-date-picker-single', 'date')])
+def process_form(start_hour, start_minute, end_hour, end_min, cam, date):
+    store = 'san diego'
+    #  date = '01/10/2020'
+    start_hour = str(start_hour)
+    start_minute = str(start_minute)
+    end_hour = str(end_hour)
+    end_min = str(end_min)
+    cam = str(cam)
+    date = datetime.strptime(date.split(' ')[0], '%Y-%m-%d')
+    date = date.strftime('%d/%m/%Y')
+    # ----------------------------------------
+    imgx = Image.open('Images/Planos_San_Diego_1.jpg')
+    imgx = imgx.convert("RGBA")
+    # ----------------------------------------
+    engine = get_db()
+    df = filter_df(engine, store, date, start_hour, start_minute, end_hour, end_min, cam)
+    # ------------------------------------
+    lin_traffic = visual_count(df)
+    map_traffic = print_path(df, imgx)
+    heat_traffic = print_hot_spots(df, imgx, 'temp_hot_spot.jpeg')
+    return map_traffic, lin_traffic, heat_traffic
+
+
 if __name__ == "__main__":
-    app.run_server(host='0.0.0.0', port='8050', debug=False)
+    app.run_server(host='0.0.0.0', port='8050', debug=True)
+
