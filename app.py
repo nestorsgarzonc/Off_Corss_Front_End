@@ -606,9 +606,10 @@ app = dash.Dash(
     suppress_callback_exceptions=True
 )
 
+server = app.server
+
 app.title = 'CV Team-69 DS4A!'
 
-server = app.server
 
 # ------------------------------------------
 # Sidebar Component
@@ -899,4 +900,4 @@ def process_form(start_hour, start_minute, end_hour, end_min, cam, date):
 
 
 if __name__ == "__main__":
-    app.run_server(host='0.0.0.0', port='80', debug=True)
+    app.run_server(debug=True)
