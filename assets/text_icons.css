@@ -86,12 +86,28 @@
         margin-left: -30px;
     }
 
-
 .collap_menu {
     display: block;
     height: 40px;
     background: black;
     color: black;
+    text-decoration: none;
+    padding-left: 40px;
+}
+
+.ico_submit {
+    height: 40px;
+    width: 275px;
+    opacity: 0.85;
+    text-align: center;
+    border-radius: 5px;
+    display: inline-block;
+    border-color: #060606;
+    background: url(Icons/Rocket_icon.svg) no-repeat;
+    background-position-x: 30px;
+    background-color: black;
+    color: aquamarine;
+    font-size: 15px;
     text-decoration: none;
     padding-left: 40px;
 }

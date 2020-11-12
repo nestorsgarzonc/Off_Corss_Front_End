@@ -58,7 +58,7 @@
     background-position: center center;
     border: none;
     height: 40px;
-    width: 200px;
+    width: 100px;
     margin: 35px 50px 35px;
 }
 
@@ -92,16 +92,34 @@
 .card-img-top {
     position: center;
     width: 100%;
-    height: 17vh;
+    height: 17vh; 
     object-fit: cover;
 }
 
 .center-text {
     text-align: center;
+    font-weight:bold;
 }
 
 .radius_img {
-    border-radius: 50%;
+    border-radius: 15%;
+    height: 160px;
+    width: 150px;
+    margin: 0px 55px 0px;
+}
+
+.radius_card {
+    height: 320px;
+    background: url(Images/bout.jpg);
+}
+
+.home_card {
+    height: 200px;
+    background: url(Images/bout.png);
+}
+
+.card_black {
+    background-color: #060606;
 }
 
 .linked_button {
@@ -140,5 +158,60 @@ html {
     background-color: none;
     position: relative;
     border:groove;
-    color:#ffd800;
+    color:#ffd800;s
+}
+
+.form_style {
+    background-color: #011627;
+    border: none;
+    opacity: 0.85;
+    border-radius: 5px;
+    padding: 16px 32px;
+    margin: 4px 2px;
+    font-size: 10px;
+    color: gray;
+    cursor: pointer;
+}
+
+.date_pick_style {
+    border: 0px;
+    text-align: left;
+    background: none;
+    font-weight: lighter;
+    height :15%;
+    margin:0 0 0;
+    font-size:medium;
+    color: #000;
+}
+
+.big_form_style {
+    color: white;
+    background: url(Images/betcap.jpg)no-repeat;
+    background-size: 100%;
+    border: white;
+    font-size: 10px;
+}
+
+.big_form_style_II {
+    color: white;
+    background: url(Images/trendsbet.jpg)no-repeat;
+    background-size: 100%;
+    border: white;
+    font-size: 10px;
+}
+
+.title_video_picker {
+    background: url(Images/plan.jpg);
+    text-align: center;
+    font-size: 20px;
+    color:lightyellow;
+    font-weight: bold;
+}
+
+.foot_video_picker {
+    background: url(Images/plan.jpg)no-repeat;
+    background-size: 100%;
+    font-size: 10px;
+    color: floralwhite;
+    font-weight: bold;
 }
