@@ -611,8 +611,7 @@ end_hour = '23'
 end_min = '59'
 cam = 'Cam 1'
 # ...
-imgx = Image.open(
-    '../../../../Downloads/Off_Corss_Front_End (1) 2/Off_Corss_Front_End/Images/Planos_San_Diego_1.jpg')
+imgx = Image.open('./Images/Planos_San_Diego_1.jpg')
 imgx = imgx.convert("RGBA")
 # ----------------------------------------
 engine = get_db()
