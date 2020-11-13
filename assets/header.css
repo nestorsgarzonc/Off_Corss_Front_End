@@ -113,9 +113,33 @@
     background: url(Images/bout.jpg);
 }
 
+.radius_card_2 {
+    height: 55px;
+    width: 100px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.center_cardc {
+    margin: 0px 120px 0px;
+    height: 105px;
+    background: url(Images/bout.jpg);
+    color: white;
+}
+
 .home_card {
     height: 200px;
     background: url(Images/bout.png);
+}
+
+.crew_card {
+    height: 50px;
+    background: url(Images/bout.png);
+    text-align: center;
+    font-weight: bold;
 }
 
 .card_black {
@@ -165,12 +189,40 @@ html {
     background-color: #011627;
     border: none;
     opacity: 0.85;
+    position: relative;
+    z-index: 100;
     border-radius: 5px;
     padding: 16px 32px;
     margin: 4px 2px;
     font-size: 10px;
     color: gray;
     cursor: pointer;
+}
+
+.form_style_nd {
+    background-color: #011627;
+    border: none;
+    opacity: 0.85;
+    border-radius: 5px;
+    padding: 16px 32px;
+    margin: 4px 2px;
+    font-size: 10px;
+    color: gray;
+    cursor: pointer;
+}
+
+.form_style_II {
+    background-color: #011627;
+    border: none;
+    opacity: 0.85;
+    height:121px;
+    border-radius: 5px;
+    padding: 16px 32px;
+    margin: 4px 2px;
+    font-size: 10px;
+    color: gray;
+    cursor: pointer;
+
 }
 
 .date_pick_style {
@@ -200,6 +252,14 @@ html {
     font-size: 10px;
 }
 
+.big_form_style_III {
+    color: white;
+    background: url(Images/lostbet.jpg)no-repeat;
+    background-size: 100%;
+    border: white;
+    font-size: 10px;
+}
+
 .title_video_picker {
     background: url(Images/plan.jpg);
     text-align: center;
@@ -214,4 +274,8 @@ html {
     font-size: 10px;
     color: floralwhite;
     font-weight: bold;
+}
+
+.center_embed {
+    margin: 10px 180px 10px;
 }

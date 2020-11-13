@@ -18,6 +18,7 @@ import re
 import cv2
 import json
 import base64
+import requests
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -32,6 +33,10 @@ from scipy.ndimage.filters import gaussian_filter
 import sqlalchemy
 from sqlalchemy import create_engine, text
 
+# ///////////////////////////////////////////////////////////////////////////////////////////////////
+# EC2 Credentials
+url = "http://ec2-3-82-23-253.compute-1.amazonaws.com"
+# ///////////////////////////////////////////////////////////////////////////////////////////////////
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
 # DataBase Credentials
 host = 'team-cv.cfsx82z4jthl.us-east-2.rds.amazonaws.com'
@@ -116,7 +121,7 @@ card_int_1 = [
 ]
 
 card_int_2 = [
-    dbc.CardHeader("Upload and process your own videos!"),
+    dbc.CardHeader("Make quick heat analysis of multiple videos!"),
     dbc.CardBody(
         [
             dbc.CardImg(
@@ -185,7 +190,7 @@ jumbotron_int = dbc.Jumbotron(
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
 # About Us cards
 card_content_1 = [
-    dbc.CardHeader("Crew Mate 1", className="center-text"),
+    dbc.CardHeader("Crew Mate 1", className="crew_card"),
     dbc.CardBody(
         [
             dbc.CardImg(src='data:image/jpg;base64,{}'.format(encoded_crew1.decode()),
@@ -193,7 +198,7 @@ card_content_1 = [
             html.H5("Alekcei Hernández", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
+                    dbc.Button("", href="https://www.linkedin.com/in/alekceinosach/",
                                color="primary", className="linked_button"),
                     dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
                                color="primary", className="email_button"),
@@ -204,7 +209,7 @@ card_content_1 = [
 ]
 
 card_content_2 = [
-    dbc.CardHeader("Crew Mate 2", className="center-text"),
+    dbc.CardHeader("Crew Mate 2", className="crew_card"),
     dbc.CardBody(
         [
             dbc.CardImg(src='data:image/jpg;base64,{}'.format(encoded_crew2.decode()),
@@ -212,7 +217,7 @@ card_content_2 = [
             html.H5("Alexander Sandoval", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
+                    dbc.Button("", href="https://www.linkedin.com/in/alexander-sandoval-202003/",
                                color="primary", className="linked_button"),
                     dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
                                color="primary", className="email_button"),
@@ -223,7 +228,7 @@ card_content_2 = [
 ]
 
 card_content_3 = [
-    dbc.CardHeader("Crew Mate 3", className="center-text"),
+    dbc.CardHeader("Crew Mate 3", className="crew_card"),
     dbc.CardBody(
         [
             dbc.CardImg(src='data:image/jpg;base64,{}'.format(encoded_crew3.decode()),
@@ -231,7 +236,7 @@ card_content_3 = [
             html.H5("David Henriquez", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
+                    dbc.Button("", href="https://www.linkedin.com/in/david-henriquez-bernal/",
                                color="primary", className="linked_button"),
                     dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
                                color="primary", className="email_button"),
@@ -242,7 +247,7 @@ card_content_3 = [
 ]
 
 card_content_4 = [
-    dbc.CardHeader("Crew Mate 4", className="center-text"),
+    dbc.CardHeader("Crew Mate 4", className="crew_card"),
     dbc.CardBody(
         [
             dbc.CardImg(src='data:image/jpg;base64,{}'.format(encoded_crew4.decode()),
@@ -250,7 +255,7 @@ card_content_4 = [
             html.H5("Guillermo Valencia", className="center-text"),
             html.Div(
                 [
-                    dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",
+                    dbc.Button("", href="https://www.linkedin.com/in/guillermo-valencia-53a150a4/",
                                color="primary", className="linked_button"),
                     dbc.Button("", href="https://www.correlation-one.com/ds4a-latam",
                                color="primary", className="email_button"),
@@ -261,7 +266,7 @@ card_content_4 = [
 ]
 
 card_content_5 = [
-    dbc.CardHeader("Crew Mate 5", className="center-text"),
+    dbc.CardHeader("Crew Mate 5", className="crew_card"),
     dbc.CardBody(
         [
             dbc.CardImg(src='data:image/jpg;base64,{}'.format(encoded_crew5.decode()),
@@ -280,7 +285,7 @@ card_content_5 = [
 ]
 
 card_content_6 = [
-    dbc.CardHeader("Crew Mate 6", className="center-text"),
+    dbc.CardHeader("Crew Mate 6", className="crew_card"),
     dbc.CardBody(
         [
             dbc.CardImg(src='data:image/jpg;base64,{}'.format(encoded_crew6.decode()),
@@ -299,7 +304,7 @@ card_content_6 = [
 ]
 
 card_content_7 = [
-    dbc.CardHeader("Crew Mate 7", className="center-text"),
+    dbc.CardHeader("Crew Mate 7", className="crew_card"),
     dbc.CardBody(
         [
             dbc.CardImg(src='data:image/jpg;base64,{}'.format(encoded_crew7.decode()),
@@ -341,7 +346,7 @@ cards_3 = dbc.CardColumns(
     ]
 )
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
-# Form for the date, hour and cam picking
+# Form for the date, hour and cam picking I
 # 1. Form for stores
 dropdown_stores = dbc.FormGroup(
     [
@@ -397,7 +402,7 @@ date_picker = dbc.Card([
         className="date_pick_style"
     ),
     html.Div(id='output-container-date-picker-single')
-], className="form_style")
+], className="form_style_nd")
 
 # 4. Cam Picking Form
 Cam_picker = dbc.FormGroup(
@@ -418,8 +423,6 @@ Cam_picker = dbc.FormGroup(
         html.Div(id='output-dropdown-cameras')
     ], className="form_style"
 )
-
-xxx = dbc.Card([html.Div(id='output-dropdown-cameras')])
 
 # 5. Final form
 form_store_pick = html.Div(
@@ -453,13 +456,112 @@ card_date = dbc.Card(
     ],
     className="big_form_style"
 )
+# ///////////////////////////////////////////////////////////////////////////////////////////////////
+# Form for the date, hour and cam picking II
+# 1. Form for stores
+dropdown_stores_II = dbc.FormGroup(
+    [
+        dbc.Label("Stores", html_for="dropdown"),
+        dcc.Dropdown(
+            id="dropdown_store_II",
+            options=[
+                {"label": "San Diego Store", "value": 'san diego'},
+                {"label": "Santa Fe Store", "value": 'santa fe'},
+            ],
+            value='san diego'
+        ),
+        html.Div(id='output-dropdown-stores-II')
+    ],  className="form_style"
+)
 
+# 2. Form for the Hours
+hour_picker_start_II = dbc.Card([
+    dbc.Label("Start_Hour"),
+    dcc.Input(
+        id="Start Hour II", type="number",
+        debounce=True, placeholder="Hour", min=0, max=23
+    ),
+    dcc.Input(
+        id="Start Minute II", type="number",
+        debounce=True, placeholder="Minute", min=0, max=59
+    ),
+    html.Div(id="number-out-II"),
+], className="form_style_II")
+
+hour_picker_end_II = dbc.Card([
+    dbc.Label("End_Hour"),
+    dcc.Input(
+        id="End Hour II", type="number",
+        debounce=True, placeholder="Hour", min=0, max=23
+    ),
+    dcc.Input(
+        id="End Minute II", type="number",
+        debounce=True, placeholder="Minute", min=0, max=59
+    ),
+    html.Div(id="number-out-end-II"),
+], className="form_style_II")
+
+# 3. Date Picking Form
+date_picker_II = dbc.Card([
+    dbc.Label("Date"),
+    dcc.DatePickerRange(
+        id='my-date-picker-single-II',
+        start_date_placeholder_text="Start Period",
+        end_date_placeholder_text="End Period",
+        calendar_orientation='vertical',
+        min_date_allowed=date(2020, 10, 1),
+        max_date_allowed=date(2020, 10, 19),
+        initial_visible_month=date(2020, 10, 1),
+        className="date_pick_style"
+    ),
+    html.Div(id='output-container-date-picker-single-II')
+], className="form_style_nd")
+
+# 4. Cam Picking Form
+Cam_picker_II = dbc.FormGroup(
+    [
+        dbc.Label("Cameras", html_for="dropdown"),
+        dcc.Dropdown(
+            id="dropdown_cams_II",
+            options=[
+                {"label": "Cam 1", "value": 'Cam 1'},
+                {"label": "Cam 2", "value": 'Cam 2'},
+                {"label": "Cam 3", "value": 'Cam 3'},
+                {"label": "Cam 4", "value": 'Cam 4'},
+                {"label": "Cam 5", "value": 'Cam 5'},
+                {"label": "All", "value": 'All'},
+            ],
+            value='All'
+        ),
+        html.Div(id='output-dropdown-cameras-II')
+    ], className="form_style"
+)
+
+# 5. Final form
+form_store_pick_II = html.Div(
+    [
+        dbc.Row(
+            [dbc.Col(
+                dbc.FormGroup([dropdown_stores_II, date_picker_II])
+
+            ),
+                dbc.Col(
+                dbc.FormGroup([hour_picker_start_II, hour_picker_end_II])
+            ),
+                dbc.Col(
+                dbc.FormGroup([Cam_picker_II,
+                               html.Button('Launch!', id='submit-val-II', n_clicks=0, className="ico_submit")])
+            )
+            ])
+    ])
+
+# ///////////////////////////////////////////////////////////////////////////////////////////////////
 card_trends = dbc.Card(
     [
         dbc.CardHeader("Trends Module", className="title_video_picker"),
         dbc.CardBody(
             [
-                form_store_pick
+                form_store_pick_II,
             ]
         ),
         dbc.CardFooter("Please select a Date, Start and End Hour and the Cam to start the video analysis",
@@ -467,7 +569,6 @@ card_trends = dbc.Card(
     ],
     className="big_form_style_II"
 )
-
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
 # Database Functions
 
@@ -574,12 +675,12 @@ def print_hot_spots(df, plane, name_temp, sigma=4):
     heatmap, xedges, yedges = np.histogram2d(
         x, y, bins=200, range=[[0, 1280], [0, 720]])
     heatmap = gaussian_filter(heatmap, sigma=sigma)
-    extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+    extent = [xedges[0], xedges[-1], yedges[-1], yedges[0]]
     img = heatmap.T
     ax.imshow(img, extent=extent, cmap=cm.jet)
-    ax.imshow(base_image, alpha=0.3)
+    ax.imshow(base_image, alpha=0.5)
     ax.set_xlim(0, 1280)
-    ax.set_ylim(0, 720)
+    ax.set_ylim(720, 0)
     ax.axes.get_yaxis().set_visible(False)
     ax.axes.get_xaxis().set_visible(False)
     plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
@@ -603,6 +704,7 @@ def print_hot_spots(df, plane, name_temp, sigma=4):
     return fig
 
 
+# **************************************************************************************
 store = 'san diego'
 date = '01/10/2020'
 start_hour = '18'
@@ -610,10 +712,9 @@ start_min = '57'
 end_hour = '23'
 end_min = '59'
 cam = 'Cam 1'
-# ...
+
 imgx = Image.open('./Images/Planos_San_Diego_1.jpg')
 imgx = imgx.convert("RGBA")
-# ----------------------------------------
 engine = get_db()
 df = filter_df(engine, store, date, start_hour,
                start_min, end_hour, end_min, cam)
@@ -632,30 +733,167 @@ Graphs_tracker = html.Div([
     html.P("Traffic Lineplot"),
     dcc.Graph(figure=lineplot, id="lin_traffic"),
 ], id='graph_tracker')
-# ///////////////////////////////////////////////////////////////////////////////////////////////////
-#engine = get_db()
-#tracker_df = pd.read_sql('SELECT * FROM tracker', engine)
-# -------------------
-# dw_mapping={0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday',
-#            4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
-#tracker_df['day_of_week_name'] = tracker_df['current_datetime'].dt.weekday.map(dw_mapping)
-#tracker_df['hour'] = tracker_df['current_datetime'].dt.hour
-#tracker_df['minute'] = tracker_df['current_datetime'].dt.minute
-# --------------------
-#df_plot = tracker_df.groupby(['day_of_week_name', 'hour', 'minute', 'Frame']).count().reset_index()
-#df_plot = df_plot.groupby(['day_of_week_name', 'hour', 'minute']).mean()['Store_name'].reset_index()
-#df_plot = df_plot.rename(columns = {'Store_name':'Count'})
-#df_plot['Count'] = np.round(df_plot['Count'])
-#df_plot['diff_count'] = df_plot['Count'] - df_plot['Count'].shift(-1)
-#df_plot['diff_count'] = [x if x >= 0 else 0 for x in df_plot['diff_count']]
-# ---------------------
-#df_plot = df_plot.groupby(['day_of_week_name', 'hour']).sum()['diff_count'].reset_index()
-#df_plot = df_plot.rename(columns = {'diff_count':'Count'})
-#fig_t = px.bar(df_plot, x='hour', y='Count', facet_col = 'day_of_week_name')
-# ---------------------
-#days_tracker = html.Div([dcc.Graph(figure=fig_t, id="day_traffic")])
 
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+def counter_df(engine, store, date_start, date_end, start_hour, start_min, end_hour, end_min, cam):
+    """ Function to generate fig, count people per second """
+
+    # Filter dates
+    start_date = datetime.strptime(date_start + ' ' + start_hour.zfill(
+        2) + ':' + start_min.zfill(2) + ':00', '%d/%m/%Y %H:%M:%S')
+    end_date = datetime.strptime(
+        date_end + ' ' + end_hour.zfill(2) + ':' + end_min.zfill(2) + ':00', '%d/%m/%Y %H:%M:%S')
+
+    connection = engine.connect()
+    query = '''
+            SELECT * from counts 
+            WHERE "Store_name"= :group 
+            AND "Start_date" >= :A
+            AND "End_date" <= :B 
+            AND "Camera"= :C
+            '''
+
+    counter_conn = connection.execute(text(
+        query), group=store, A=start_date, B=end_date, C=int(cam[-1]), O='person').fetchall()
+    columns = ['Store_name', 'Start_date', 'End_date',
+               'Camera', 'Count', 'inout', 'name_video']
+    counter = pd.DataFrame(counter_conn, columns=columns)
+    return counter
+# -------------------------------------------------------------------------------
+
+
+def count_plot(counts_dt, filter_1='day_of_week_name', filter_2='hour'):
+    vars_plot = {'day_of_week_name': 'Days of the Week',
+                 'hour': 'Hours',
+                 'minute': 'Minutes',
+                 'week': 'Week',
+                 'weekofyear': 'Week of Year',
+                 'month': 'Month',
+                 'day': 'Day',
+                 'year': 'Year'}
+    vars_select = [filter_1, filter_2]
+    var_0 = vars_plot[vars_select[0]]
+    var_1 = vars_plot[vars_select[1]]
+    into = counts_dt.loc[counts_dt.inout == "In", :]
+    dw_mapping = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday',
+                  4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
+    into.loc[:, 'day_of_week_name'] = into.Start_date.dt.weekday.map(
+        dw_mapping)
+    into.loc[:, 'hour'] = into.Start_date.dt.hour
+    into.loc[:, 'minute'] = into.Start_date.dt.minute
+    into.loc[:, 'week'] = into.Start_date.dt.week
+    into.loc[:, 'weekofyear'] = into.Start_date.dt.weekofyear
+    into.loc[:, 'year'] = into.Start_date.dt.year
+    into.loc[:, 'month'] = into.Start_date.dt.month
+    into.loc[:, 'day'] = into.Start_date.dt.day
+    df_plot = into.groupby([vars_select[0], vars_select[1]]).sum()[
+        'Count'].reset_index()
+    fig = px.bar(df_plot, y='Count', x=vars_select[1], facet_col=vars_select[0],
+                 title='Counter of People per {} and {}'.format(var_0, var_1))
+    total_in = np.sum(into['Count'])
+    total_out = np.sum(counts_dt.loc[counts_dt.inout == "Out", 'Count'])
+    return {'fig': fig, 'in': total_in, 'out': total_out}
+
+
+# **************************************************************************************
+engine = get_db()
+store = 'san diego'
+date_start = '01/10/2020'
+date_end = '03/10/2020'
+start_hour = '00'
+start_min = '00'
+end_hour = '23'
+end_min = '59'
+cam = 'Cam 1'
+
+counts_dt = counter_df(engine, store, date_start, date_end,
+                       start_hour, start_min, end_hour, end_min, cam)
+plot = count_plot(counts_dt, filter_1='day_of_week_name', filter_2='hour')
+plotx = plot['fig']
+
+in_pep = plot['in']
+out_pep = plot['out']
+
+Graphs_counter = html.Div([html.P("People Counter Graph"),
+                           dcc.Graph(figure=plotx, id="count_week"),
+                           ], id='graph_counter')
+
+card_count_1 = [
+    dbc.CardHeader("Total count of customer in-traffic:",
+                   className="crew_card"),
+    dbc.CardBody(
+        [
+            html.Div(in_pep, id='count_in'),
+        ], className="radius_card_2"
+    ),
+]
+
+card_count_2 = [
+    dbc.CardHeader("Total count of customer out-traffic:",
+                   className="crew_card"),
+    dbc.CardBody(
+        [
+            html.Div(out_pep, id='count_out'),
+        ], className="radius_card_2"
+    ),
+]
+
+# ///////////////////////////////////////////////////////////////////////////////////////////////////
+# Heat analysis
+video_library = dbc.FormGroup(
+    [
+        dbc.Label("Video Library", html_for="dropdown"),
+        dcc.Dropdown(
+            id="dropdown_video_lib",
+            options=[
+                {"label": "Outlet_Americas_1",
+                 "value": 'Outlet_Americas_1'},
+                {"label": "Outlet_Americas_2",
+                 "value": 'Outlet_Americas_2'},
+                {"label": "Outlet_Galerias_1",
+                 "value": 'Outlet_Galerias_1'},
+            ],
+            value='Outlet_Americas_1'
+        ),
+        html.Button('Launch!', id='submit-val-III',
+                    n_clicks=0, className="ico_submit"),
+    ], className="form_style"
+)
+
+card_video_trail = dbc.Card(
+    [
+        dbc.CardHeader("Quick Heat Trail Analysis",
+                       className="title_video_picker"),
+        dbc.CardBody(
+            [
+                video_library
+            ]
+        ),
+        dbc.CardFooter("Please select a video available from the library",
+                       className="foot_video_picker"),
+    ],
+    className="big_form_style_III"
+)
+
+final_video_lib = html.Div([
+
+    dbc.Row([
+        dbc.Col(dbc.FormGroup([card_video_trail,
+                               html.Hr(),
+                               html.P("Video Sample"),
+                               html.Hr(),
+                               html.Div(id='video_player',
+                                        className="center_embed"),
+                               html.Hr(),
+                               html.P("Quick Heat Trail results"),
+                               html.Hr(),
+                               html.Div(id='image_heat')
+                               ]))
+    ])
+])
+
 video_upload = html.Div([
     dcc.Upload(
         id='upload-video',
@@ -762,7 +1000,7 @@ sidebar = html.Div(
                 [
                     dbc.NavLink("Home", href="/page-1",
                                 id="page-1-link", className="ico_home"),
-                    dbc.NavLink("Upload my Video", href="/page-2",
+                    dbc.NavLink("Quick heat video analysis", href="/page-2",
                                 id="page-2-link", className="ico_upload"),
                     # ----------------------------------------------------------------------------------------
                     dbc.Button(
@@ -808,7 +1046,7 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 def toggle_active_links(pathname):
     if pathname == "/":
         # Treat page 1 as the homepage / index
-        return True, False, False
+        return True, False, False, False, False
     return [pathname == f"/page-{i}" for i in range(1, 6)]
 
 
@@ -820,13 +1058,21 @@ def render_page_content(pathname):
                          ])
     elif pathname == "/page-2":
         return html.Div([
-            html.P("Video Upload Module"),
-            video_upload
+            final_video_lib
+            #  video_upload
         ])
     elif pathname == "/page-3":
-        return html.Div([
-                        card_trends
-                        ])
+        return html.Div([card_trends,
+                         html.Hr(),
+                         dbc.CardColumns(
+                             [
+                                 dbc.Card(card_count_1,
+                                          className="center_cardc"),
+                                 dbc.Card(card_count_2,
+                                          className="center_cardc")
+                             ]
+                         ),
+                         Graphs_counter])
     elif pathname == "/page-4":
         return html.Div([card_date,
                          html.Hr(),
@@ -934,33 +1180,56 @@ def update_output_camera(value):
     if value is not None:
         return 'You have selected "{}"'.format(value)
 
-# Video upload Callback
+# Video heat analysis Callback
 
 
-def parse_contents(contents, filename, date):
+def parse_contents(contents):
     return html.Div([
-        html.H5(filename),
-        html.H6(datetime.fromtimestamp(date)),
         html.Video(src=contents, autoPlay=True, controls=True),
         html.Hr()
     ])
 
 
-@app.callback(Output('output-video-upload', 'children'),
-              [Input('upload-video', 'contents')],
-              [State('upload-video', 'filename'),
-               State('upload-video', 'last_modified')])
-def update_output(list_of_contents, list_of_names, list_of_dates):
-    if list_of_contents is not None:
-        children = [
-            parse_contents(c, n, d) for c, n, d in
-            zip(list_of_contents, list_of_names, list_of_dates)]
-        return children
+@app.callback([Output('image_heat', 'children'),
+               Output('video_player', 'children')],
+              [Input('dropdown_video_lib', 'value'),
+               Input('submit-val-III', 'n_clicks')])
+def update_output(video_name, submit):
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'submit-val-III' in changed_id and video_name is not None:
+        # Build paths
+        video_name = str(video_name)
+        video_file = 'Sample_videos/' + video_name + '.mp4'
+        video_file_x = zip(video_file)
+        # Play the video
+        if video_name == "Outlet_Americas_1":
+            video_player = html.Iframe(
+                width="560", height="315", src="https://www.youtube.com/embed/fJo9A3OhNfM")
+        elif video_name == "Outlet_Americas_2":
+            video_player = html.Iframe(
+                width="560", height="315", src="https://www.youtube.com/embed/BnH67JXD36k")
+        else:
+            video_player = html.Iframe(
+                width="560", height="315", src="https://www.youtube.com/embed/wBh-mp83nak")
+        # Build the analysis
+        payload = {}
+        files = [('file', open(video_file, 'rb'))]
+        headers = {}
+        response = requests.request(
+            "POST", url+'/uploadHeatmapVideo', headers=headers, data=payload, files=files)
+        file = open("sample_image.png", "wb")
+        file.write(response.content)
+        file.close()
+        back_result = 'sample_image.png'
+        encoded_result = base64.b64encode(open(back_result, 'rb').read())
+        image_heat = dbc.CardImg(
+            src='data:image/png;base64,{}'.format(encoded_result.decode()), className="display-4")
+        return image_heat, video_player
+    else:
+        return (no_update, no_update)
 
-#
-# Start
 
-
+# Video analysis results callback
 @app.callback([Output('map_traffic', 'figure'),
                Output('lin_traffic', 'figure'),
                Output('heat_traffic', 'figure')],
@@ -983,8 +1252,7 @@ def process_form(start_hour, start_minute, end_hour, end_min, cam, date, submit)
         date = datetime.strptime(date.split(' ')[0], '%Y-%m-%d')
         date = date.strftime('%d/%m/%Y')
         # ----------------------------------------
-        imgx = Image.open(
-            '../../../../Downloads/Off_Corss_Front_End (1) 2/Off_Corss_Front_End/Images/Planos_San_Diego_1.jpg')
+        imgx = Image.open('Images/Planos_San_Diego_1.jpg')
         imgx = imgx.convert("RGBA")
         # ----------------------------------------
         engine = get_db()
@@ -998,6 +1266,50 @@ def process_form(start_hour, start_minute, end_hour, end_min, cam, date, submit)
     else:
         return (no_update, no_update, no_update)
 
+# Counter analysis results callback
+
+
+@app.callback([Output('count_week', 'figure'),
+               Output('count_in', 'children'),
+               Output('count_out', 'children')],
+              [Input("Start Hour II", "value"),
+               Input("Start Minute II", "value"),
+               Input("End Hour II", "value"),
+               Input("End Minute II", "value"),
+               Input('dropdown_cams_II', 'value'),
+               Input('my-date-picker-single-II', 'start_date'),
+               Input('my-date-picker-single-II', 'end_date'),
+               Input('submit-val-II', 'n_clicks')])
+def process_form_II(start_hour, start_minute, end_hour, end_min, cam, start_date, end_date, submit):
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'submit-val-II' in changed_id:
+        store = 'san diego'
+        # ---------------------------
+        start_date = datetime.strptime(start_date.split(' ')[0], '%Y-%m-%d')
+        start_date = start_date.strftime('%d/%m/%Y')
+        # ---------------------------
+        end_date = datetime.strptime(end_date.split(' ')[0], '%Y-%m-%d')
+        end_date = end_date.strftime('%d/%m/%Y')
+        # ---------------------------
+        start_hour = str(start_hour)
+        start_minute = str(start_minute)
+        end_hour = str(end_hour)
+        end_min = str(end_min)
+        cam = str(cam)
+        # ------------------------------------
+        engine = get_db()
+        counts_dt = counter_df(engine, store, start_date, end_date,
+                               start_hour, start_minute, end_hour, end_min, cam)
+        count_week_org = count_plot(
+            counts_dt, filter_1='day_of_week_name', filter_2='hour')
+        count_week = count_week_org['fig']
+        count_in = count_week_org['in']
+        count_out = count_week_org['out']
+        return count_week, count_in, count_out
+
+    else:
+        return (no_update)
+
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(host='0.0.0.0', port='8050', debug=True)
