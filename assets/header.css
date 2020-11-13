@@ -1,0 +1,281 @@
+.app-header {
+    padding: 40px;
+    text-align: center;
+    background: #1abc9c;
+    color: white;
+    font-size: 30px;
+}
+
+.sidebar-wrapper {
+    background: url(/images/logj.jpg) no-repeat center;
+    // an maybe the quotes are not necessary. Check if the path is correct ! background-size: cover;
+    // change this to 'contain' if you want to test different modes -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    margin-left: -250px;
+    left: 250px;
+    width: 250px;
+    position: fixed;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: all 0.4s ease 0s;
+}
+
+.jumboclass {
+    background: url(Images/portada_nignos.jpg) no-repeat center;
+    background-size: 100%;
+    background-position: center center;
+    height: 250px;
+    color: none;
+    border: 0;
+}
+
+.correl_button {
+    background: url(Images/correlation-one.png) no-repeat center;
+    border: none;
+    background-size: 100%;
+    position: relative;
+    height: 40px;
+    width: 200px;
+    margin: 35px 50px 35px;
+}
+
+.mintic_button {
+    background: url(Images/mintic.png) no-repeat center;
+    position: relative;
+    background-size: 100%;
+    border: none;
+    height: 40px;
+    width: 200px;
+    margin: 35px 60px 35px;
+}
+
+.ploty_button {
+    background: url(Images/logo-plotly.png) center;
+    position: relative;
+    background-size: 100%;
+    background-position: center center;
+    border: none;
+    height: 40px;
+    width: 100px;
+    margin: 35px 50px 35px;
+}
+
+.company_button {
+    background: url(Images/side_bar_logo3.png);
+    position: center;
+    background-size: 100%;
+    background-position: center center;
+    border: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 80px;
+    width: 200px;
+}
+
+.metrics_button {
+    position: center;
+    background-size: 100%;
+    background-position: center center;
+    border: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.welcome_jumbo {
+    background:none;
+}
+
+.card-img-top {
+    position: center;
+    width: 100%;
+    height: 17vh; 
+    object-fit: cover;
+}
+
+.center-text {
+    text-align: center;
+    font-weight:bold;
+}
+
+.radius_img {
+    border-radius: 15%;
+    height: 160px;
+    width: 150px;
+    margin: 0px 55px 0px;
+}
+
+.radius_card {
+    height: 320px;
+    background: url(Images/bout.jpg);
+}
+
+.radius_card_2 {
+    height: 55px;
+    width: 100px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.center_cardc {
+    margin: 0px 120px 0px;
+    height: 105px;
+    background: url(Images/bout.jpg);
+    color: white;
+}
+
+.home_card {
+    height: 200px;
+    background: url(Images/bout.png);
+}
+
+.crew_card {
+    height: 50px;
+    background: url(Images/bout.png);
+    text-align: center;
+    font-weight: bold;
+}
+
+.card_black {
+    background-color: #060606;
+}
+
+.linked_button {
+    background: url(Images/linkedin_icon.png);
+    position: center;
+    background-size: 100%;
+    background-position: center center;
+    border: none;
+    height: 40px;
+    width: 40px;
+    margin: 35px 75px 35px;
+}
+
+.email_button {
+    background: url(Images/email_icon.png);
+    position: center;
+    background-size: 100%;
+    background-position: center center;
+    border: none;
+    height: 40px;
+    width: 40px;
+    margin: 35px -50px 35px;
+}
+
+/* Base Styles
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* NOTE
+html is set to 62.5% so that all the REM measurements throughout Skeleton
+are based on 10px sizing. So basically 1.5rem = 15px :) */
+html {
+    font-size: 100%;
+}
+
+.pretty_container {
+    border-radius: 2px;
+    background-color: none;
+    position: relative;
+    border:groove;
+    color:#ffd800;s
+}
+
+.form_style {
+    background-color: #011627;
+    border: none;
+    opacity: 0.85;
+    position: relative;
+    z-index: 100;
+    border-radius: 5px;
+    padding: 16px 32px;
+    margin: 4px 2px;
+    font-size: 10px;
+    color: gray;
+    cursor: pointer;
+}
+
+.form_style_nd {
+    background-color: #011627;
+    border: none;
+    opacity: 0.85;
+    border-radius: 5px;
+    padding: 16px 32px;
+    margin: 4px 2px;
+    font-size: 10px;
+    color: gray;
+    cursor: pointer;
+}
+
+.form_style_II {
+    background-color: #011627;
+    border: none;
+    opacity: 0.85;
+    height:121px;
+    border-radius: 5px;
+    padding: 16px 32px;
+    margin: 4px 2px;
+    font-size: 10px;
+    color: gray;
+    cursor: pointer;
+
+}
+
+.date_pick_style {
+    border: 0px;
+    text-align: left;
+    background: none;
+    font-weight: lighter;
+    height :15%;
+    margin:0 0 0;
+    font-size:medium;
+    color: #000;
+}
+
+.big_form_style {
+    color: white;
+    background: url(Images/betcap.jpg)no-repeat;
+    background-size: 100%;
+    border: white;
+    font-size: 10px;
+}
+
+.big_form_style_II {
+    color: white;
+    background: url(Images/trendsbet.jpg)no-repeat;
+    background-size: 100%;
+    border: white;
+    font-size: 10px;
+}
+
+.big_form_style_III {
+    color: white;
+    background: url(Images/lostbet.jpg)no-repeat;
+    background-size: 100%;
+    border: white;
+    font-size: 10px;
+}
+
+.title_video_picker {
+    background: url(Images/plan.jpg);
+    text-align: center;
+    font-size: 20px;
+    color:lightyellow;
+    font-weight: bold;
+}
+
+.foot_video_picker {
+    background: url(Images/plan.jpg)no-repeat;
+    background-size: 100%;
+    font-size: 10px;
+    color: floralwhite;
+    font-weight: bold;
+}
+
+.center_embed {
+    margin: 10px 180px 10px;
+}
