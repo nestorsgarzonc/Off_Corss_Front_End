@@ -659,10 +659,9 @@ start_min = '57'
 end_hour = '23'
 end_min = '59'
 cam = 'Cam 1'
-#...
-imgx = Image.open('Images/Planos_San_Diego_1.jpg')
-imgx=imgx.convert("RGBA")
-#----------------------------------------
+
+imgx = Image.open('./Images/Planos_San_Diego_1.jpg')
+imgx = imgx.convert("RGBA")
 engine = get_db()
 df = filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam)
 lineplot=visual_count(df)
