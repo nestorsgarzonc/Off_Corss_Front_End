@@ -16,3 +16,4 @@ psycopg2-binary
 matplotlib>=3.2.2
 opencv_contrib_python>=4.4.0.46
 opencv-python-headless>=4.2.0.32
+requests
