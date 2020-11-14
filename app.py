@@ -55,6 +55,7 @@ metrics_images="Images/Metrics_icon.png"
 metrics_img=base64.b64encode(open(metrics_images, 'rb').read())
 #---
 cloud_images="Images/upload_vector.jpg"
+cloud_img=base64.b64encode(open(cloud_images, 'rb').read())
 #Crew
 crew_1='Images/Crew1.jpg'
 crew_2='Images/Crew2.jpg'
