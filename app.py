@@ -9,10 +9,11 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 
-# Flask libraries
+#Flask libraries
+import flask
 from flask import Flask, send_from_directory
 
-# Python Libraries
+#Python Libraries
 import io
 import re
 import cv2
@@ -27,11 +28,11 @@ import matplotlib.cm as cm
 import plotly.express as px
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-from datetime import date, datetime
+from datetime import date,datetime
 from scipy.ndimage.filters import gaussian_filter
-# SQL Alchemy
+#SQL Alchemy
 import sqlalchemy
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine,text
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////
 #EC2 Credentials
@@ -45,18 +46,20 @@ password = 'DS4A!2020'
 database = 'postgres'
 #///////////////////////////////////////////////////////////////////////////////////////////////////
 #Image Sources
-image_sidebar= 'Images/side_bar_logo3.png' # replace with your own image
+#----------------------
+#Logo for the sidebar
+image_sidebar= 'Images/side_bar_logo3.png'
 encoded_image = base64.b64encode(open(image_sidebar, 'rb').read())
 #Cover Page images
 cover_child='Images/portada_nignos.jpg'
 cover_img=base64.b64encode(open(cover_child, 'rb').read())
-#---
+#--- Icon
 metrics_images="Images/Metrics_icon.png"
 metrics_img=base64.b64encode(open(metrics_images, 'rb').read())
-#---
+#--- Icon
 cloud_images="Images/upload_vector.jpg"
 cloud_img=base64.b64encode(open(cloud_images, 'rb').read())
-#Crew
+#Crew images
 crew_1='Images/Crew1.jpg'
 crew_2='Images/Crew2.jpg'
 crew_3='Images/Crew3.jpg'
@@ -64,7 +67,7 @@ crew_4='Images/Crew4.jpg'
 crew_5='Images/Crew5.jpg'
 crew_6='Images/Crew6.jpg'
 crew_7='Images/Crew7.jpg'
-
+#Crew images encoding
 encoded_crew1 = base64.b64encode(open(crew_1, 'rb').read())
 encoded_crew2 = base64.b64encode(open(crew_2, 'rb').read())
 encoded_crew3 = base64.b64encode(open(crew_3, 'rb').read())
@@ -80,6 +83,7 @@ encoded_logo=base64.b64encode(open(team_l, 'rb').read())
 san_diego_store='Images/Planos_San_Diego_1.jpg'
 san_diego_blue=base64.b64encode(open(san_diego_store, 'rb').read())
 
+#Store cam maps
 san_diego_rex='Images/SD_Bp_Ref.jpg'
 san_diego_ref=base64.b64encode(open(san_diego_rex, 'rb').read())
 #///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,6 +111,7 @@ card_cover = dbc.Jumbotron(
     className="jumboclass"
 )
 
+#Card components for the jumbotron
 card_int_1 = [
     dbc.CardHeader("Explore the traffic metrics in the Stores"),
     dbc.CardBody(
@@ -149,6 +154,7 @@ cards_home = dbc.CardColumns(
     ]
 )
 
+#Link definition for the jumbotron
 jumbotron_links =   html.Div(
                             [
                                 dbc.Button("", href="https://www.mintic.gov.co/portal/inicio/",color="primary", className="mintic_button"),
@@ -288,6 +294,7 @@ card_content_7 = [
     ),
 ]
 
+#Card definition for the main component
 cards = dbc.CardColumns(
     [
         dbc.Card(card_content_1, color="warning", inverse=True),
@@ -321,7 +328,6 @@ dropdown_stores = dbc.FormGroup(
                             id="dropdown_store",
                             options=[
                                 {"label": "San Diego Store", "value": 'san diego'},
-                         #       {"label": "Santa Fe Store", "value": 'santa fe'},
                             ],
                             value='san diego'
                                     ),
@@ -329,7 +335,7 @@ dropdown_stores = dbc.FormGroup(
                     ],  className="form_style"
                 )
 
-#2. Form for the Hours
+#2. Form for the Hour range picker
 hour_picker_start = dbc.Card([
         dbc.Label("Start_Hour"),
         dcc.Input(
@@ -382,9 +388,9 @@ Cam_picker= dbc.FormGroup(
                                 {"label": "Cam 3", "value": 'Cam 3'},
                                 {"label": "Cam 4", "value": 'Cam 4'},
                                 {"label": "Cam 6", "value": 'Cam 6'},
-                       #         {"label": "All", "value": 'All'},
+                                {"label": "All", "value": 'All'},
                             ],
-                            value='Cam 1'
+                            value='All'
                         ),
                         html.Div(id='output-dropdown-cameras')
                     ],className="form_style"
@@ -409,6 +415,7 @@ form_store_pick = html.Div(
                         ])
                   ])
 #///////////////////////////////////////////////////////////////////////////////////////////////////
+#Final card component
 card_date = dbc.Card(
     [
         dbc.CardHeader("Traffic Processing Module", className="title_video_picker"),
@@ -417,7 +424,7 @@ card_date = dbc.Card(
                 form_store_pick
             ]
         ),
-        dbc.CardFooter("Please select a Date, Start and End Hour and the Cam to start the video analysis", className="foot_video_picker"),
+        dbc.CardFooter("Please select a Date, Start and End Hour and the Cam to start the video analysis. Please use small minute ranges when using the 'All' cameras option in order to avoid a slow browser", className="foot_video_picker"),
     ],
     className="big_form_style"
 )
@@ -439,7 +446,7 @@ dropdown_stores_II = dbc.FormGroup(
                     ],  className="form_style"
                 )
 
-#2. Form for the Hours
+#2. Form for the Hour range picker
 hour_picker_start_II = dbc.Card([
                                  dbc.Label("Start_Hour"),
                                  dcc.Input(
@@ -522,6 +529,7 @@ form_store_pick_II = html.Div(
                   ])
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////
+#Final card component
 card_trends = dbc.Card(
     [
         dbc.CardHeader("Trends Module", className="title_video_picker"),
@@ -549,7 +557,7 @@ def get_db():
   engine = sqlalchemy.create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}', max_overflow = 20)
   return engine
 
-
+#Function with cam input option
 def filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam):
     """ Function to generate fig, count people per second """
     # Filter dates
@@ -573,6 +581,32 @@ def filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam
 
     return tracker
 
+#Function for the "All" cameras option
+def filter_df_all(engine, store, date, start_hour, start_min, end_hour, end_min):
+    """ Function to generate fig, count people per second """
+    # Filter dates
+    start_date = datetime.strptime(date + ' ' + start_hour.zfill(2) + ':' + start_min.zfill(2) + ':00', '%d/%m/%Y %H:%M:%S')
+    end_date = datetime.strptime(date + ' ' + end_hour.zfill(2) + ':' + end_min.zfill(2) + ':00', '%d/%m/%Y %H:%M:%S')
+
+    connection = engine.connect()
+
+    query = '''
+            SELECT * from tracker 
+            WHERE "Store_name"= :group 
+            AND "current_datetime" BETWEEN :A AND :B 
+            AND "X_center_perspective" <> 0
+            AND "Y_center_perspective" <> 0
+            AND "Object"= :O
+            '''
+
+    tracker_conn = connection.execute(text(query), group='san diego', A=start_date, B=end_date, O='person').fetchall()
+    columns= ['Store_name','Start_date','End_date','current_datetime','Camera','Object','Id','X_center_original','Y_center_original',
+              'X_center_perspective','Y_center_perspective','X_min','Y_min','X_max','Y_max','Frame']
+    tracker = pd.DataFrame(tracker_conn, columns=columns)
+
+    return tracker
+
+#Function for the tracker figure generation
 def visual_count(tracker):
     """ Function to generate count og people per sec """
     # df_plot = tracker.groupby(['Store_name','Current_date','Frame']).count()['Second'].reset_index()
@@ -591,6 +625,7 @@ def visual_count(tracker):
     fig.update_layout(width = 900, height = 600)
     return fig
 
+#Function for the tracker figure generation II
 def print_path(tracker, plane):
     """ Function to print path inside a plane """
     tracker = tracker[(tracker['X_center_perspective'] != 0) & (tracker['Y_center_perspective'] != 0)]
@@ -614,6 +649,7 @@ def print_path(tracker, plane):
     fig.update_yaxes(automargin=True)
     return fig
 
+#Function for the heat map generation
 def print_hot_spots(df, plane, name_temp, sigma = 4):
     # Get the data to plot
     df = df[(df['X_center_perspective'] != 0) & (df['Y_center_perspective'] != 0)]
@@ -653,24 +689,27 @@ def print_hot_spots(df, plane, name_temp, sigma = 4):
     fig.update_yaxes(automargin=True)
     return fig
 #**************************************************************************************
+#Primitive input to welcome the user
 store = 'san diego'
 date = '01/10/2020'
 start_hour = '18'
-start_min = '57'
-end_hour = '23'
-end_min = '59'
+start_min = '20'
+end_hour = '18'
+end_min = '25'
 cam = 'Cam 1'
-#...
+#Blueprint source
 imgx = Image.open('Images/Planos_San_Diego_1.jpg')
 imgx=imgx.convert("RGBA")
 #----------------------------------------
 engine = get_db()
-df = filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam)
+#df = filter_df(engine, store, date, start_hour, start_min, end_hour, end_min, cam)
+df = filter_df_all(engine, store, date, start_hour, start_min, end_hour, end_min)
 lineplot=visual_count(df)
 pathx=print_path(df, imgx)
 #---------------------------------------
 heat_map=print_hot_spots(df, imgx, 'temp_hot_spot.jpeg')
 #---------------------------------------
+#Graphic component
 Graphs_tracker = html.Div([
                                html.P("People Tracker Results over the Store's BluePrint",className="P_style"),
                                dcc.Graph(figure=pathx, id="map_traffic"),
@@ -683,6 +722,7 @@ Graphs_tracker = html.Div([
                            ], id='graph_tracker')
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////
+#People counter function definition
 def counter_df(engine, store, date_start, date_end, start_hour, start_min, end_hour, end_min, cam):
     """ Function to generate fig, count people per second """
 
@@ -704,6 +744,7 @@ def counter_df(engine, store, date_start, date_end, start_hour, start_min, end_h
     counter = pd.DataFrame(counter_conn, columns=columns)
     return counter
 #-------------------------------------------------------------------------------
+#People counter graphic function definition
 def count_plot(counts_dt, filter_1 = 'day_of_week_name', filter_2 = 'hour'):
   vars_plot = {'day_of_week_name':'Days of the Week',
               'hour':'Hours',
@@ -735,6 +776,7 @@ def count_plot(counts_dt, filter_1 = 'day_of_week_name', filter_2 = 'hour'):
   return {'fig':fig, 'in': total_in, 'out':total_out}
 
 #**************************************************************************************
+#Primitive input to welcome the user
 engine = get_db()
 store = 'san diego'
 date_start = '01/10/2020'
@@ -745,6 +787,7 @@ end_hour = '23'
 end_min = '59'
 cam = 'Cam 1'
 
+#Launching the functions
 counts_dt = counter_df(engine, store, date_start, date_end, start_hour, start_min, end_hour, end_min, cam)
 plot = count_plot(counts_dt, filter_1 = 'day_of_week_name', filter_2 = 'hour')
 plotx=plot['fig']
@@ -752,10 +795,11 @@ plotx=plot['fig']
 in_pep=plot['in']
 out_pep=plot['out']
 
+#Graphic component
 Graphs_counter = html.Div([ html.P("People Counter Graph", className="P_style"),
                                dcc.Graph(figure=plotx, id="count_week"),
                            ], id='graph_counter')
-
+#**************************************************************************************
 card_count_1 = [
     dbc.CardHeader("Total count of customer in-traffic:", className="crew_card"),
     dbc.CardBody(
@@ -792,7 +836,7 @@ video_library=dbc.FormGroup(
                         dbc.Spinner(html.Div(id="loading-output")),
                     ],className="form_style"
                 )
-
+#Card component
 card_video_trail = dbc.Card(
     [
         dbc.CardHeader("Quick Heat Trail Analysis", className="title_video_picker"),
@@ -811,7 +855,7 @@ final_video_lib=html.Div([
     dbc.Row([
              dbc.Col(dbc.FormGroup([card_video_trail,
                                     html.Hr(),
-                                    html.P("Video Sample: Check the complete video from the libray and see below a quick heat trail analysis using the App",className="P_style"),
+                                    html.P("Video Sample: Check the complete video from the Library and see below a quick heat trail analysis using the App",className="P_style"),
                                     html.Hr(),
                                     html.Div(id='video_player', className="center_embed"),
                                     html.Hr(),
@@ -846,20 +890,19 @@ video_upload= html.Div([
     html.Div(id='output-video-upload'),
 ])
 
-
-#Building Blocks
+#------------------------------------------
+#Building Blocks for the app server
 #------------------------------------------
 # Meta Tags
 #------------------------------------------
-app = dash.Dash(
-    __name__,
-    external_stylesheets=[dbc.themes.CYBORG],
-    # These meta_tags ensure content is scaled correctly on different devices. Don't Delete!!
-    meta_tags=[
-        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-    ],
-    suppress_callback_exceptions = True
-)
+server = flask.Flask(__name__)  # define flask app server
+app = dash.Dash(__name__,
+                external_stylesheets=[dbc.themes.CYBORG],
+                 # These meta_tags ensure content is scaled correctly on different devices. Don't Delete!!
+                meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
+                server=server,
+                suppress_callback_exceptions = True
+                )
 
 server = app.server
 
@@ -959,10 +1002,11 @@ sidebar = html.Div(
     ],
     id="sidebar",
 )
-
 content = html.Div(id="page-content")
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
-
+#/////////////////////////////////////////////////////////////////////////////////////
+#Callbacks definition
+#***********************************
 # this callback uses the current pathname to set the active state of the
 # corresponding nav link to true, allowing users to tell see page they are on
 @app.callback(
@@ -975,7 +1019,7 @@ def toggle_active_links(pathname):
         return True, False, False, False, False
     return [pathname == f"/page-{i}" for i in range(1, 6)]
 
-
+#Web body definition
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname in ["/", "/page-1"]:
@@ -1018,13 +1062,12 @@ def render_page_content(pathname):
         ]
     )
 
-
+#Callbacks for collapsing the sidebar
 @app.callback(
     Output("sidebar", "className"),
     [Input("sidebar-toggle", "n_clicks")],
     [State("sidebar", "className")],
 )
-
 
 def toggle_classname(n, classname):
     if n and classname == "":
@@ -1037,24 +1080,25 @@ def toggle_classname(n, classname):
     [Input("navbar-toggle", "n_clicks")],
     [State("collapse", "is_open")],
 )
+
 def toggle_collapse(n, is_open):
     if n:
         return not is_open
     return is_open
-
 
 @app.callback(
     Output("collapse_2", "is_open"),
     [Input("collapse-button", "n_clicks")],
     [State("collapse_2", "is_open")],
 )
+
 def toggle_collapse(n, is_open):
     if n:
         return not is_open
     return is_open
 
-
-#Hour and minutes callback
+#-------------------------------------------------------
+#Hour and minutes display callback
 #Start
 @app.callback(
     Output("number-out", "children"),
@@ -1071,7 +1115,7 @@ def number_render(dhour, dminute):
 def number_render(dhour, dminute):
     return "End Hour: {}, End Minute: {}".format(dhour, dminute)
 
-#Date Callback
+#Date display callback
 @app.callback(
     Output('output-container-date-picker-single', 'children'),
     [Input('my-date-picker-single', 'date')])
@@ -1082,7 +1126,7 @@ def update_output(date_value):
         date_string = date_object.strftime('%d, %B, %Y')
         return string_prefix + date_string
 
-# Store Callback
+# Store display callback
 @app.callback(
     Output('output-dropdown-stores', 'children'),
     [Input('dropdown_store', 'value')]
@@ -1092,7 +1136,7 @@ def update_output_store(value):
     if value is not None:
         return 'You have selected "{}"'.format(value)
 
-# Camera Callback
+# Camera display callback
 @app.callback(
     Output('output-dropdown-cameras', 'children'),
     [Input('dropdown_cams', 'value')]
@@ -1102,7 +1146,7 @@ def update_output_camera(value):
     if value is not None:
         return 'You have selected "{}"'.format(value)
 
-# Video heat analysis Callback
+# Video heat trails analysis Callback
 def parse_contents(contents):
     return html.Div([
         html.Video(src=contents, autoPlay=True, controls=True),
@@ -1172,14 +1216,17 @@ def process_form(start_hour,start_minute,end_hour,end_min,cam,date,submit):
         imgx=imgx.convert("RGBA")
         #----------------------------------------
         engine = get_db()
-        df = filter_df(engine, store, date, start_hour, start_minute, end_hour, end_min, cam)
+        if cam == "All":
+            df = filter_df_all(engine, store, date, start_hour, start_minute, end_hour, end_min)
+        else:
+            df = filter_df(engine, store, date, start_hour, start_minute, end_hour, end_min, cam)
         #------------------------------------
         lin_traffic=visual_count(df)
         map_traffic=print_path(df, imgx)
         heat_traffic=print_hot_spots(df, imgx, 'temp_hot_spot.jpeg')
         return map_traffic,lin_traffic,heat_traffic,submit
     else:
-        return (no_update, no_update, no_update,no_update)
+        return (no_update,no_update,no_update,no_update)
 
 #Counter analysis results callback
 @app.callback([Output('count_week', 'figure'),
@@ -1221,9 +1268,8 @@ def process_form_II(start_hour,start_minute,end_hour,end_min,cam,start_date,end_
 
     else:
         return (no_update)
-
-
-
-
+#Port and home IP definition
 if __name__ == "__main__":
-    app.run_server(host='0.0.0.0', port='8050', debug=True)
+     app.run_server(host='0.0.0.0',port='8050',debug=True)
+
+

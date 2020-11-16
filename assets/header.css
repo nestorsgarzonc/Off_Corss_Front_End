@@ -203,7 +203,7 @@ html {
     padding: 16px 32px;
     margin: 4px 2px;
     font-size: 10px;
-    color: gray;
+    color: lightslategray;
     cursor: pointer;
 }
 
@@ -216,7 +216,7 @@ html {
     margin: 4px 2px;
     font-size: 10px;
     z-index: 1001 !important;
-    color: gray;
+    color: lightslategray;
     cursor: pointer;
 }
 
@@ -230,7 +230,7 @@ html {
     padding: 16px 32px;
     margin: 4px 2px;
     font-size: 10px;
-    color: gray;
+    color: lightslategray;
     cursor: pointer;
 }
 
